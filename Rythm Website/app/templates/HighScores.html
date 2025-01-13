@@ -1,0 +1,209 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RhythmHero - High Scores</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #display-current-user,
+        #login-link,
+        #game-link {
+            position: absolute;
+            right: 10px;
+            padding: 10px;
+            background-color: #869eb8;
+            border: 1px solid #000000;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        #display-current-user {
+            top: 10px;
+        }
+
+        #login-link {
+            top: 60px;
+        }
+
+        #game-link {
+            top: 110px;
+        }
+
+        #display-current-user:hover,
+        #login-link:hover,
+        #game-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            background-color: #97b1d3;
+        }
+
+        .high-scores-container {
+            background-color: #869eb8;
+            padding: 30px;
+            border-radius: 5px;
+            border: 1px solid #000000;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            width: 90%;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .high-scores-title {
+            color: #333;
+            font-size: 24px;
+            font-weight: bold;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .high-scores-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: rgba(255, 255, 255, 0.1);
+            margin: 0 auto;
+            font-size: 18px;
+        }
+
+        .high-scores-table th,
+        .high-scores-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #000000;
+            color: #333;
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+        }
+
+        .high-scores-table th {
+            background-color: #97b1d3;
+        }
+
+        .high-scores-table tr:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+       
+        .delete-button {
+            padding: 5px 10px;
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .delete-button:hover {
+            background-color: #cc0000;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+    
+        .delete-form {
+            display: inline;
+            margin: 0;
+            padding: 0;
+        }
+
+    
+        .message-list {
+            position: absolute;
+            top: 120px;  
+            left: 50%;
+            transform: translateX(-50%);
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .message-list li {
+            padding: 10px 20px;
+            margin: 5px 0;
+            border-radius: 5px;
+            background-color: #869eb8;
+            color: #333;
+            font-weight: bold;
+            font-family: Arial, sans-serif;
+            border: 1px solid #000000;
+        }
+    </style>
+</head>
+<body>
+    {% if messages %}
+    <ul class="message-list">
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <div id="display-current-user">
+        Current User: {{ request.user.username }}
+    </div>
+    <a href="{% url 'login_page' %}" id="login-link">Logout</a>
+    <a href="{% url 'game_page' %}" id="game-link">Home</a>
+
+    <div class="high-scores-container">
+        <h2 class="high-scores-title">High Scores</h2>
+        <table class="high-scores-table">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Player</th>
+                    <th>Score</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if scores %}
+                    {% for score in scores %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ score.user.username }}</td>
+                        <td>{{ score.score }}</td>
+                        <td>{{ score.date_played|date:"F j, Y, g:i a" }}</td>
+                        <td>
+                            {% if score.user == request.user or request.user.is_superuser %}
+                                <form method="POST" action="{% url 'delete_score' score.id %}" class="delete-form">
+                                    {% csrf_token %}
+                                    <button type="submit" class="delete-button">Delete</button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="5" style="text-align: center;">No scores yet!</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

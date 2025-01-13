@@ -1,0 +1,105 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RhythmHero</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+</head>
+
+<body>
+    <div id="display-current-user">
+        Current User: {{ request.user.username }}
+    </div>
+    <div id="display-current-user-score">
+        {% if user_score %}
+            Score: {{ user_score.score }}
+        {% else %}
+            No score
+        {% endif %}
+    </div>
+
+    <div class="game-description">
+        <h2>Welcome to RhythmHero!</h2>
+        <p>Test your rhythm skills by matching the vocals to the beat:</p>
+        <ul>
+            <li>Press Play Game to start</li>
+            <li>Watch for the countdown (3,2,1,GO!)</li>
+            <li>Press the corresponding keys when you hear the vocals</li>
+            <li>Score points for hitting the right keys in sequence</li>
+            <li>Keys are shown on the buttons below (e.g., Work it =[Q])</li>
+        </ul>
+    </div>
+
+    <span><a href="{% url 'log_out_page' %}" id="login-link">Logout</a></span>
+    <span><a href="{% url 'high_scores_page' %}" id="high-score-link">View HighScores</a></span>
+    <span><a href="{% url 'recordings_page' %}" id="recordings-link">View All Recordings</a></span>
+
+    <div class="player">
+        <audio id="mainAudioPlayer" controls>
+            <source src="{% static 'music/karaokeshort.mp3' %}" type="audio/mp3">
+        </audio>
+
+        <form id="scoreForm" method="POST" action="">
+            {% csrf_token %}
+        </form>
+
+        <div class="button-row">
+            <button class="big-button" id="playButton">Play Game</button>
+            <button class="big-button" id="recordButton">Record Keys</button>
+        </div>
+
+        <div class="button-row">
+            <button class="big-button-vocals" id="work_it">Work it =[Q]</button>
+            <button class="big-button-vocals" id="make_it">Make it =[W]</button>
+            <button class="big-button-vocals" id="do_it">Do it =[E]</button>
+            <button class="big-button-vocals" id="makes_us">Makes us =[R]</button>
+
+            <button class="big-button-vocals" id="harder">Harder =[U]</button>
+            <button class="big-button-vocals" id="better">Better =[I]</button>
+            <button class="big-button-vocals" id="faster">Faster =[O]</button>
+            <button class="big-button-vocals" id="stronger">Stronger =[P]</button>
+
+            <button class="big-button-vocals" id="more_than">More than =[A]</button>
+            <button class="big-button-vocals" id="hour">Hour =[S]</button>
+            <button class="big-button-vocals" id="our">Our =[D]</button>
+            <button class="big-button-vocals" id="never">Never =[F]</button>
+
+            <button class="big-button-vocals" id="ever">Ever =[J]</button>
+            <button class="big-button-vocals" id="after">After =[K]</button>
+            <button class="big-button-vocals" id="work_is">Work is =[L]</button>
+            <button class="big-button-vocals" id="over">Over =[;]</button>
+        </div>
+    </div>
+
+    <div class="text-display-box">
+        <div id="message-content">
+        </div>
+    </div>
+
+    <script>
+        const workitButtonSound='{% static "music/work_it.mp3" %}';
+        const makeitButtonSound='{% static "music/make_it.mp3" %}';
+        const doitButtonSound='{% static "music/do_it.mp3" %}';
+        const makeusButtonSound='{% static "music/makes_us.mp3" %}';
+        
+        const harderButtonSound='{% static "music/harder.mp3" %}';
+        const betterButtonSound='{% static "music/better.mp3" %}';
+        const fasterButtonSound='{% static "music/faster.mp3" %}';
+        const strongerButtonSound='{% static "music/stronger.mp3" %}';
+        
+        const morethanButtonSound='{% static "music/more_than.mp3" %}';
+        const hourButtonSound='{% static "music/hour.mp3" %}';
+        const ourButtonSound='{% static "music/our.mp3" %}';
+        const neverButtonSound='{% static "music/never.mp3" %}';
+        
+        const everButtonSound='{% static "music/ever.mp3" %}';
+        const afterButtonSound='{% static "music/after.mp3" %}';
+        const workisButtonSound='{% static "music/work_is.mp3" %}';
+        const overButtonSound='{% static "music/over.mp3" %}';
+    </script>
+
+    <script src="{% static 'script.js' %}"></script>
+</body>
+</html>

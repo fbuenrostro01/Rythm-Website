@@ -1,0 +1,279 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RhythmHero - Recordings</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #display-current-user,
+        #login-link,
+        #game-link {
+            position: absolute;
+            right: 10px;
+            padding: 10px;
+            background-color: #869eb8;
+            border: 1px solid #000000;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        #display-current-user {
+            top: 10px;
+        }
+
+        #login-link {
+            top: 60px;
+        }
+
+        #game-link {
+            top: 110px;
+        }
+
+        #display-current-user:hover,
+        #login-link:hover,
+        #game-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            background-color: #97b1d3;
+        }
+
+        .recordings-container {
+            background-color: #869eb8;
+            padding: 30px;
+            border-radius: 5px;
+            border: 1px solid #000000;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            width: 90%;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .recordings-title {
+            color: #333;
+            font-size: 24px;
+            font-weight: bold;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .recording-item {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #000000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .recording-info {
+            color: #333;
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+        }
+
+        .play-button {
+            padding: 8px 16px;
+            background-color: #97b1d3;
+            color: #333;
+            border: 1px solid #000000;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .play-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            background-color: #a8c1e0;
+        }
+
+        .message-list {
+            position: absolute;
+            top: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .message-list li {
+            padding: 10px 20px;
+            margin: 5px 0;
+            border-radius: 5px;
+            background-color: #869eb8;
+            color: #333;
+            font-weight: bold;
+            font-family: Arial, sans-serif;
+            border: 1px solid #000000;
+        }
+
+        .delete-form,
+        .delete-button {
+            display: none;
+        }
+
+        .recordings-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: rgba(255, 255, 255, 0.1);
+            margin: 20px auto;
+            font-size: 18px;
+        }
+
+        .recordings-table th,
+        .recordings-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #000000;
+            color: #333;
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+        }
+
+        .recordings-table th {
+            background-color: #97b1d3;
+        }
+
+        .recordings-table tr:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .play-button {
+            padding: 8px 16px;
+            background-color: #97b1d3;
+            color: #333;
+            border: 1px solid #000000;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            width: auto;
+        }
+
+        .play-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            background-color: #a8c1e0;
+        }
+    </style>
+</head>
+<body>
+    <div id="display-current-user">
+        Current User: {{ request.user.username }}
+    </div>
+    <a href="{% url 'login_page' %}" id="login-link">Logout</a>
+    <a href="{% url 'game_page' %}" id="game-link">Home</a>
+
+    {% if messages %}
+    <ul class="message-list">
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <div class="recordings-container">
+        <h2 class="recordings-title">All Recordings</h2>
+        
+        <table class="recordings-table">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Recording Name</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for recording in all_recordings %}
+                <tr>
+                    <td>{{ recording.user.username }}</td>
+                    <td>{{ recording.recording_name }}</td>
+                    <td>
+                        <button class="play-button" onclick="playRecording('{{ recording.sequence|escapejs }}')">Play</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const workitButtonSound='{% static "music/work_it.mp3" %}';
+        const makeitButtonSound='{% static "music/make_it.mp3" %}';
+        const doitButtonSound='{% static "music/do_it.mp3" %}';
+        const makeusButtonSound='{% static "music/makes_us.mp3" %}';
+        const harderButtonSound='{% static "music/harder.mp3" %}';
+        const betterButtonSound='{% static "music/better.mp3" %}';
+        const fasterButtonSound='{% static "music/faster.mp3" %}';
+        const strongerButtonSound='{% static "music/stronger.mp3" %}';
+        const morethanButtonSound='{% static "music/more_than.mp3" %}';
+        const hourButtonSound='{% static "music/hour.mp3" %}';
+        const ourButtonSound='{% static "music/our.mp3" %}';
+        const neverButtonSound='{% static "music/never.mp3" %}';
+        const everButtonSound='{% static "music/ever.mp3" %}';
+        const afterButtonSound='{% static "music/after.mp3" %}';
+        const workisButtonSound='{% static "music/work_is.mp3" %}';
+        const overButtonSound='{% static "music/over.mp3" %}';
+
+        async function playRecording(sequence) {
+            const actions=JSON.parse(sequence);
+            for (const action of actions) {
+                playSound(getSoundForKey(action.key));
+                await new Promise(resolve => setTimeout(resolve, 400));
+            }
+        }
+
+        function getSoundForKey(key) {
+            const sounds={
+                'q': workitButtonSound,
+                'w': makeitButtonSound,
+                'e': doitButtonSound,
+                'r': makeusButtonSound,
+                'u': harderButtonSound,
+                'i': betterButtonSound,
+                'o': fasterButtonSound,
+                'p': strongerButtonSound,
+                'a': morethanButtonSound,
+                's': hourButtonSound,
+                'd': ourButtonSound,
+                'f': neverButtonSound,
+                'j': everButtonSound,
+                'k': afterButtonSound,
+                ';': workisButtonSound,
+                'l': overButtonSound
+            };
+            return sounds[key];
+        }
+
+        function playSound(soundFile) {
+            const audio=new Audio(soundFile);
+            audio.play();
+        }
+    </script>
+</body>
+</html>
